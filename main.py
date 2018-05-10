@@ -25,9 +25,6 @@ print(list(data.columns))
 
 print(data['simple_journal'].value_counts())
 
-# sns.countplot(x='simple_journal', data=data, palette='hls')
-# plt.show()
-# plt.savefig('counts')
 
 '''Group information in columns based on mean of certain features'''
 '''Comment out sections to print out the means for that particular feature'''
@@ -42,16 +39,19 @@ mean_simple_journal = data.groupby('simple_journal').mean()
 # data = data[data['simple_journal'] != 'Refused']
 data['simple_journal'] = data['simple_journal'].map({'Chargeback': 1, 'Settled': 0, 'Refused': 1})
 
-'''CountPlots for simple_journal'''
+'''BarPlot  for dependent variables in this case simple_journal'''
 '''Comment out print statement to see plot'''
 sns.countplot(x='simple_journal', data=data, palette='hls')
-# plt.ylim(0, 600)
 # plt.show()
 
-'''CountPlots for other data, comment out print statement for plot'''
+'''BarPlots for other varaiables, comment out print statement for plot'''
 sns.countplot(x='cardverificationcodesupplied', data=data)
 # plt.ylim(0, 25000)
 # plt.show()
+
+'''Check for missing values if any'''
+'''comment out print statement to see missing values'''
+# print(data.isnull().sum())
 
 '''Drop columns not needed for prediction'''
 '''The to be dropped columns are chosen based on count and frequency plots'''
@@ -62,8 +62,8 @@ data2 = pd.get_dummies(data, columns=['txvariantcode', 'currencycode', 'shopperi
                                        'cardverificationcodesupplied',
                                       'cvcresponsecode', 'accountcode'])
 
-'''HeatMap'''
-# sns.heatmap(data2.corr())
+'''HeatMap check for independence between independent variables'''
+sns.heatmap(data2.corr())
 # plt.show()
 
 '''Split data into training and test sets'''
@@ -88,8 +88,9 @@ result = model_selection.cross_val_score(modelCV, X_train, y_train, cv=kfold, sc
 
 print("10-fold cross validation average accuracy: %.3f" %(result.mean()))
 
-'''Predict test set'''
+'''Predict test set results'''
 y_pred = classifier.predict(X_test)
+
 
 '''Create confusion Matrix'''
 '''Add(label=np.unique(y_pred)) for non zero values of y_pred if needed '''
