@@ -63,7 +63,7 @@ data2 = pd.get_dummies(data, columns=['txvariantcode', 'currencycode', 'shopperi
                                       'cvcresponsecode', 'accountcode'])
 
 '''HeatMap check for independence between independent variables'''
-sns.heatmap(data2.corr())
+# sns.heatmap(data2.corr())
 # plt.show()
 
 '''Split data into training and test sets'''
