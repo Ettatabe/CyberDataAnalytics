@@ -61,6 +61,14 @@ def average_num_of_daily_transactions(ip, transaction):
 # print(data.shape)
 #print(list(data.columns))
 
+data['creationdate'] = pd.to_datetime(data['creationdate'])
+# print(data['creationdate'])
+data['creationdate'] = (data['creationdate'] - pd.datetime(1970,1,1)).dt.total_seconds()
+# print(data['creationdate'])
+data['creationdate'] = data['creationdate'].astype('int64')#//1e9
+# print(data['creationdate'])
+data.sort_values('creationdate')
+
 ips = {}
 
 #print(data[data.columns.values].values)
@@ -68,9 +76,9 @@ for i, transaction in enumerate(data[data.columns.values].values):
 	if transaction[15] not in ips:
 		ips[transaction[15]]=[]
 	ip = ips[transaction[15]]
-	timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
-	data.iat[i, 12] = timestamp
-	transaction[12] = timestamp
+	#timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
+	#data.iat[i, 12] = timestamp
+	#transaction[12] = timestamp
 
 	data.iat[i,17] = time_since_last_transaction(ip, transaction)
 	data.iat[i,18] = total_amount_last_24h(ip, transaction)

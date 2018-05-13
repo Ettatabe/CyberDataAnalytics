@@ -1,1 +1,18 @@
 \section*{Building classifiers}
+
+
+
+\subsection*{Bonus assignment}
+Another way to look at this data is not on a transaction basis, but rather on a credit card or ip address. We created two separate logit classifiers relying on such information. The classifiers require the following information:
+
+\begin{itemize}
+	\setlength\itemsep{0.05em}
+	\item Amount
+	\item Average amount until current transaction
+	\item Total amount in last 24 hours
+	\item Time since last transaction
+	\item The fraud/transaction ratio until current transaction
+\end{itemize}
+
+These values are calculated for every transaction of a user, where a user is defined by the card\_id or ip\_id columns. The data is viewed as coming in real-time, so it is first sorted by creationdate and converted to epoch timestamps for easy calculation. Next, we traverse over all transactions and calculate the desired values. Finally, we combine the outputs of the two classifiers with the classifier we created earlier by using the voting rule $$Avg(confidence(logit_1), confidence(logit_2), confidence(logit_3))>0.5$$ and obtain the following results.
+

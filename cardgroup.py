@@ -14,6 +14,7 @@ from sklearn.cross_validation import train_test_split
 import seaborn as sns
 
 import datetime
+import time
 from sklearn import preprocessing
 import numpy as np
 
@@ -63,14 +64,22 @@ def average_num_of_daily_transactions(card, transaction):
 
 cards = {}
 
+data['creationdate'] = pd.to_datetime(data['creationdate'])
+# print(data['creationdate'])
+data['creationdate'] = (data['creationdate'] - pd.datetime(1970,1,1)).dt.total_seconds()
+# print(data['creationdate'])
+data['creationdate'] = data['creationdate'].astype('int64')#//1e9
+# print(data['creationdate'])
+data.sort_values('creationdate')
+
 #print(data[data.columns.values].values)
 for i, transaction in enumerate(data[data.columns.values].values):
 	if transaction[16] not in cards:
 		cards[transaction[16]]=[]
 	card = cards[transaction[16]]
-	timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
-	data.iat[i, 12] = timestamp
-	transaction[12] = timestamp
+	# timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
+	# data.iat[i, 12] = timestamp
+	# transaction[12] = timestamp
 
 	data.iat[i,17] = time_since_last_transaction(card, transaction)
 	data.iat[i,18] = total_amount_last_24h(card, transaction)

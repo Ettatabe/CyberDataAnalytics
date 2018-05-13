@@ -68,15 +68,23 @@ def average_num_of_daily_transactions(group, transaction):
 # print(data.shape)
 #print(list(data.columns))
 
+data['creationdate'] = pd.to_datetime(data['creationdate'])
+# print(data['creationdate'])
+data['creationdate'] = (data['creationdate'] - pd.datetime(1970,1,1)).dt.total_seconds()
+# print(data['creationdate'])
+data['creationdate'] = data['creationdate'].astype('int64')#//1e9
+# print(data['creationdate'])
+data.sort_values('creationdate')
+
 ips = {}
 cards = {}
 
 #print(data[data.columns.values].values)
 for i, transaction in enumerate(data[data.columns.values].values):
 
-	timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
-	data.iat[i, 12] = timestamp
-	transaction[12] = timestamp
+	# timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
+	# data.iat[i, 12] = timestamp
+	# transaction[12] = timestamp
 
 	if transaction[16] not in cards:
 		cards[transaction[16]]=[]
