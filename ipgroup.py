@@ -36,11 +36,11 @@ data['average_num_of_daily_transactions'] = None #21
 def time_since_last_transaction(ip, transaction):
 	if len(ip)==0:
 		return 0
-	return transaction[1]-ip[-1][1]
+	return transaction[12]-ip[-1][12]
 def total_amount_last_24h(ip, transaction):
 	if len(ip)==0:
 		return 0
-	return sum(map(lambda t: t[5], filter(lambda t: transaction[1]-t[1]<=86400, ip)))
+	return sum(map(lambda t: t[5], filter(lambda t: transaction[12]-t[12]<=86400, ip)))
 def fraud_ratio(ip, transaction):
 	if len(ip)==0:
 		return 0
@@ -68,9 +68,9 @@ for i, transaction in enumerate(data[data.columns.values].values):
 	if transaction[15] not in ips:
 		ips[transaction[15]]=[]
 	ip = ips[transaction[15]]
-	timestamp = datetime.datetime.strptime(transaction[1], "%Y-%m-%d %H:%M:%S").timestamp()
-	data.iat[i, 1] = timestamp
-	transaction[1] = timestamp
+	timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
+	data.iat[i, 12] = timestamp
+	transaction[12] = timestamp
 
 	data.iat[i,17] = time_since_last_transaction(ip, transaction)
 	data.iat[i,18] = total_amount_last_24h(ip, transaction)

@@ -43,11 +43,11 @@ data['ip_average_num_of_daily_transactions'] = None #26
 def time_since_last_transaction(group, transaction):
 	if len(group)==0:
 		return 0
-	return transaction[1]-group[-1][1]
+	return transaction[12]-group[-1][12]
 def total_amount_last_24h(group, transaction):
 	if len(group)==0:
 		return 0
-	return sum(map(lambda t: t[5], filter(lambda t: transaction[1]-t[1]<=86400, group)))
+	return sum(map(lambda t: t[5], filter(lambda t: transaction[12]-t[12]<=86400, group)))
 def fraud_ratio(group, transaction):
 	if len(group)==0:
 		return 0
@@ -74,9 +74,9 @@ cards = {}
 #print(data[data.columns.values].values)
 for i, transaction in enumerate(data[data.columns.values].values):
 
-	timestamp = datetime.datetime.strptime(transaction[1], "%Y-%m-%d %H:%M:%S").timestamp()
-	data.iat[i, 1] = timestamp
-	transaction[1] = timestamp
+	timestamp = datetime.datetime.strptime(transaction[12], "%Y-%m-%d %H:%M:%S").timestamp()
+	data.iat[i, 12] = timestamp
+	transaction[12] = timestamp
 
 	if transaction[16] not in cards:
 		cards[transaction[16]]=[]
