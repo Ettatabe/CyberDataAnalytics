@@ -72,7 +72,7 @@ def printing_kfold_scores(x_train_data, y_train_data):
         recall_accs = []
         for iteration, indices in enumerate(fold, start=1):
             lr = LogisticRegression(C=c_param, penalty='l1')
-            lr.fit(x_train_data.iloc[indices[0], :], y_train_data.iloc[indices[0], :].values.ravel())
+            lr.fit(x_train_data.iloc[indices[0], :], y_train_data.iloc[indices[0],:].values.ravel())
             y_pred_undersample = lr.predict(x_train_data.iloc[indices[1],:].values)
             recall_acc = recall_score(y_train_data.iloc[indices[1], :].values, y_pred_undersample)
             recall_accs.append(recall_acc)
@@ -90,15 +90,15 @@ def printing_kfold_scores(x_train_data, y_train_data):
     print('Best model to choose from cross val is with c param =', best_c)
     return best_c
 
-# X_train_undersample = X_train_undersample.fillna(0, inplace=False)
-# y_train_undersample = y_train_undersample.fillna(0, inplace=False)
+print(type(X_train_undersample))
+print(type(y_train_undersample))
 best_c = printing_kfold_scores(X_train_undersample, y_train_undersample)
 
 
 '''Predict model for undersampled data'''
 lr = LogisticRegression(C=best_c, penalty='l1')
 lr.fit(X_train_undersample, y_train_undersample.values.ravel())
-y_pred_undersample = lr.predict(X_test_undersample.values)
+y_pred_undersample = lr.predict(np.nan_to_num(X_test_undersample))
 
 '''create and compute Confusion matrix'''
 cnf_matrix = confusion_matrix(y_test_undersample, y_pred_undersample)

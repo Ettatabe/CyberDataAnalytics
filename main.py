@@ -60,12 +60,13 @@ data.drop(data.columns[[0, 1, 2, 4, 5, 7, 12, 14, 15, 16]], axis=1, inplace=True
 '''Create dummy variables for columns needed for prediction'''
 data2 = pd.get_dummies(data, columns=['txvariantcode', 'currencycode', 'shopperinteraction',
                                        'cardverificationcodesupplied',
-                                      'cvcresponsecode', 'accountcode'])
+                                      'cvcresponsecode', 'accountcode'], drop_first=True)
 
 '''HeatMap check for independence between independent variables'''
 # sns.heatmap(data2.corr())
 # plt.show()
 
+print(data2.columns)
 '''Split data into training and test sets'''
 '''X contains all rows in data2 and all columns from 1 upwards'''
 '''y contains all rows in data2 and column 0'''
