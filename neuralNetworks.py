@@ -5,29 +5,17 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 
+'''Load input file and map chargebacks to 1 and settled transactions to 0'''
 data = pd.read_csv("data_for_student_case.csv")
 data = data[data['simple_journal'] != 'Refused']
 data['simple_journal'] = data['simple_journal'].map({'Chargeback': 1, 'Settled': 0})
 
+'''Remove string on cardid, ipid, mailid columns since model needs floats'''
 data['card_id'] = [x.strip().replace('card', '') for x in data['card_id']]
 data['ip_id'] = [x.strip().replace('ip', '') for x in data['ip_id']]
 data['mail_id'] = [x.strip().replace('email', '') for x in data['mail_id']]
 
-print(data.columns.values)
-# data.drop(data.columns[[1, 12]], axis=1, inplace=True)
-
-
-# data2 = pd.get_dummies(data, columns=['txvariantcode', 'shopperinteraction', 'issuercountrycode',
-#                                        'cardverificationcodesupplied', 'shoppercountrycode', 'currencycode',
-#                                       'cvcresponsecode', 'accountcode'])
-# print(data2.columns.values)
-# print(data.columns.values)
-# data.drop(data.columns[[1, 2, 5, 6, 7, 9, 10, 11]], axis=1, inplace=True)
-# data = data.merge(data2)
-
-
-# print(data2.isnull().sum())
-
+'''Creating training, dev and test sets'''
 columns = "txid bookingdate issuercountrycode txvariantcode bin amount currencycode shoppercountrycode shopperinteraction cardverificationcodesupplied" \
           " cvcresponsecode creationdate accountcode mail_id ip_id card_id ".split()
 X = pd.DataFrame.as_matrix(data,columns=columns)
@@ -247,7 +235,7 @@ def update_parameters(parameters, grads, learning_rate):
 layer_dims = [16, 30, 20,  10, 5, 1]  # 5 Layer model with 3 hidden layers
 
 # Deep Learning network to classify frauds and normal
-layer_dims = [16, 30, 20, 10, 5, 1]  # 5 Layer model with 3 hidden layers
+layer_dims = [222813, 30, 20, 10, 5, 1]  # 5 Layer model with 3 hidden layers
 
 
 # Deep Learning network to classify frauds and normal #.0065
@@ -287,7 +275,7 @@ def nn_model(X, Y, layer_dims, learning_rate=.0065, num_iterations=2500, print_c
 print(X_train_set.shape)
 print(Y_train_set.shape)
 
-parameters = nn_model(X_train_set[1,:0], Y_train_set, [16, 14, 13, 10, 8,1 ],learning_rate=.0065,num_iterations = 2500, print_cost = True)
+parameters = nn_model(X_dev, Y_dev, [7112, 14, 13, 10, 8,1 ],learning_rate=.0065,num_iterations = 2500, print_cost = True)
 def predict(X, y, parameters):
     m = X.shape[1]
     p = np.zeros((1, m))

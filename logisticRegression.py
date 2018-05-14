@@ -5,6 +5,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cross_validation import  train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
+import seaborn as sns
+sns.set(style="white")
+sns.set(style="whitegrid", color_codes=True)
+
 from sklearn.cross_validation import  KFold, cross_val_score
 from sklearn.metrics import confusion_matrix, precision_recall_curve, auc, roc_auc_score, roc_curve, recall_score, classification_report
 '''Read data from csv file using pandas'''
@@ -27,9 +31,11 @@ data = pd.get_dummies(data, columns=['txvariantcode', 'currencycode', 'shopperin
                                        'cardverificationcodesupplied', 'shoppercountrycode', 'currencycode',
                                       'cvcresponsecode', 'accountcode'], drop_first=True)
 
+
 '''Normalize amount feature for transactions'''
 data['normalamount'] = StandardScaler().fit_transform(data['amount'].reshape(-1,1))
 data = data.drop(['amount'], axis=1)
+
 
 '''Divide data into test and training set'''
 X = data.loc[:, data.columns != 'simple_journal']
@@ -90,8 +96,16 @@ def printing_kfold_scores(x_train_data, y_train_data):
     print('Best model to choose from cross val is with c param =', best_c)
     return best_c
 
-print(type(X_train_undersample))
-print(type(y_train_undersample))
+# print(np.where(X_train_undersample == 'nan'))
+# print(np.where(X_train_undersample == 'NA'))
+# print(np.where(X_train_undersample == 'Na'))
+# print(np.where(y_train_undersample == 'NaN'))
+# print(np.where(y_train_undersample == 'nan'))
+# print(np.where(y_train_undersample == 'NA'))
+# print(np.where(y_train_undersample == 'Na'))
+# print(np.where(y_train_undersample == 'NaN'))
+
+# X_train_undersample = np.nan_to_num(X_train_undersample)
 best_c = printing_kfold_scores(X_train_undersample, y_train_undersample)
 
 
