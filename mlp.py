@@ -1,9 +1,11 @@
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import  metrics
+from sklearn.preprocessing import StandardScaler
 
 from sklearn.metrics import confusion_matrix, precision_recall_curve, auc, roc_auc_score, roc_curve, recall_score, classification_report
 from numpy import *
+import numpy as np
 
 import pandas as pd
 
@@ -25,6 +27,11 @@ data = pd.get_dummies(data, columns=['txvariantcode', 'currencycode', 'shopperin
                                        'cardverificationcodesupplied', 'shoppercountrycode', 'currencycode',
                                       'cvcresponsecode', 'accountcode'], drop_first=True)
 data.drop(data.columns[[0, 1, 5]], axis=1, inplace=True)
+
+
+'''Normalize amount feature for transactions'''
+data['normalamount'] = StandardScaler().fit_transform(data['amount'].reshape(-1,1))
+data = data.drop(['amount'], axis=1)
 
 '''Divide data into test and training set'''
 X = data.loc[:, data.columns != 'simple_journal']
@@ -56,27 +63,41 @@ X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3, random_st
 
 X_train_undersample, X_test_undersample, y_train_undersample, y_test_undersample = train_test_split(X_undersample, y_undersample, test_size=0.3, random_state=0)
 
-
+'''Classifier'''
 classifier = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5,2), random_state=1)
 
 
 X_train_undersample = X_train_undersample.astype(int)
 X_test_undersample = X_test_undersample.astype(int)
-y_train_undersample = np.nan_to_num(y_train_undersample)
+# X_train = X_train.astype(int)
+# X_test = X_test.astype(int)
 
-# pd.isnull(np.array([np.nan, 0], dtype=float))
-# pd.to_numeric(X_train, errors='coerce')
-
+'''Fit undersampled data'''
 classifier.fit(X_train_undersample, y_train_undersample)
 
-pred = classifier.predict( X_test_undersample)
+# classifier.fit(X_train, y_train)
 
-score = confusion_matrix(y_test_undersample, pred)
 
-print(score)
-print(classification_report(y_test, pred))
 
-print("Accuracy of testing dataset", metrics.accuracy_score(y_test, pred))
-print("recall of  testing dataset: ", metrics.recall_score(y_test, pred))
+pred_undersample = classifier.predict( X_test_undersample)
+# pred_normal = classifier.predict(X_test)
+
+confusionmatrix_undersample = confusion_matrix(y_test_undersample, pred_undersample)
+# confusionmatrix_normal = confusion_matrix(y_test_undersample, pred_normal)
+
+
+print(confusionmatrix_undersample)
+# print(confusionmatrix_normal)
+print(classification_report(y_test, pred_undersample))
+# print(classification_report(y_test, pred_normal))
+
+
+print("Accuracy of undersampled testing dataset", metrics.accuracy_score(y_test, pred_undersample))
+print("Accuracy of  normal testing dataset", metrics.accuracy_score(y_test, pred_normal))
+
+print("recall of undersampled testing dataset: ", metrics.recall_score(y_test, pred_undersample))
+print("recall of normal testing dataset: ", metrics.recall_score(y_test, pred_normal))
+
+
 
 
