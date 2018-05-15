@@ -235,7 +235,7 @@ def update_parameters(parameters, grads, learning_rate):
 layer_dims = [16, 30, 20,  10, 5, 1]  # 5 Layer model with 3 hidden layers
 
 # Deep Learning network to classify frauds and normal
-layer_dims = [222813, 30, 20, 10, 5, 1]  # 5 Layer model with 3 hidden layers
+layer_dims = [16, 30, 20, 10, 5, 1]  # 5 Layer model with 3 hidden layers
 
 
 # Deep Learning network to classify frauds and normal #.0065
@@ -275,7 +275,7 @@ def nn_model(X, Y, layer_dims, learning_rate=.0065, num_iterations=2500, print_c
 print(X_train_set.shape)
 print(Y_train_set.shape)
 
-parameters = nn_model(X_dev, Y_dev, [7112, 14, 13, 10, 8,1 ],learning_rate=.0065,num_iterations = 2500, print_cost = True)
+parameters = nn_model(X_train_set, Y_train_set, layer_dims,learning_rate=.0065,num_iterations = 2500, print_cost = True)
 def predict(X, y, parameters):
     m = X.shape[1]
     p = np.zeros((1, m))
