@@ -23,7 +23,6 @@ data['card_id'] = [x.strip().replace('card', '') for x in data['card_id']]
 data['ip_id'] = [x.strip().replace('ip', '') for x in data['ip_id']]
 data['mail_id'] = [x.strip().replace('email', '') for x in data['mail_id']]
 
-print(data.columns.values)
 data.drop(data.columns[[0, 1, 12]], axis=1, inplace=True)
 
 '''Create dummy variables for columns needed for prediction'''
@@ -66,6 +65,8 @@ y_undersample = under_sample_data.ix[:, under_sample_data.columns == 'simple_jou
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3, random_state=0)
 
 X_train_undersample, X_test_undersample, y_train_undersample, y_test_undersample = train_test_split(X_undersample, y_undersample, test_size=0.3, random_state=0)
+
+
 '''Use 10 kfold to find best model'''
 def printing_kfold_scores(x_train_data, y_train_data):
     fold = KFold(len(y_train_data), 10, shuffle=False)
@@ -96,18 +97,7 @@ def printing_kfold_scores(x_train_data, y_train_data):
     print('Best model to choose from cross val is with c param =', best_c)
     return best_c
 
-# print(np.where(X_train_undersample == 'nan'))
-# print(np.where(X_train_undersample == 'NA'))
-# print(np.where(X_train_undersample == 'Na'))
-# print(np.where(y_train_undersample == 'NaN'))
-# print(np.where(y_train_undersample == 'nan'))
-# print(np.where(y_train_undersample == 'NA'))
-# print(np.where(y_train_undersample == 'Na'))
-# print(np.where(y_train_undersample == 'NaN'))
-
-# X_train_undersample = np.nan_to_num(X_train_undersample)
 best_c = printing_kfold_scores(X_train_undersample, y_train_undersample)
-
 
 '''Predict model for undersampled data'''
 lr = LogisticRegression(C=best_c, penalty='l1')
