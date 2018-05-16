@@ -2,7 +2,17 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import  metrics
 from sklearn.preprocessing import StandardScaler
+import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, log_loss
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC, LinearSVC, NuSVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+import matplotlib.pyplot as plt
 
 
 
@@ -78,8 +88,19 @@ X_train_undersample, X_test_undersample, y_train_undersample, y_test_undersample
 
 
 '''Classifier'''
-classifier = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(6,2), random_state=1)
-clf = RandomForestClassifier(max_depth=3, random_state=0)
+classifiers = [
+    KNeighborsClassifier(3),
+    SVC(kernel="rbf", C=0.025, probability=True),
+    NuSVC(probability=True),
+    DecisionTreeClassifier(),
+    RandomForestClassifier(),
+    AdaBoostClassifier(),
+    GradientBoostingClassifier(),
+    GaussianNB(),
+    LinearDiscriminantAnalysis(),
+    QuadraticDiscriminantAnalysis(),
+    MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(6,2), random_state=1),
+    RandomForestClassifier(max_depth=3, random_state=0) ]
 
 X_train_undersample = np.nan_to_num(X_train_undersample)
 for i,item in enumerate(X_train_undersample):
@@ -95,28 +116,68 @@ X_train_undersample = np.nan_to_num(X_train_undersample)
 y_train_undersample = y_train_undersample.astype(int)
 X_test_undersample = np.nan_to_num(X_test_undersample)
 
-classifier.fit(X_train_undersample, y_train_undersample)
-clf.fit(X_train_undersample, y_train_undersample)
+log_cols=["Classifier", "Accuracy", "Log Loss"]
+log = pd.DataFrame(columns=log_cols)
 
-pred = classifier.predict(X_test_undersample)
-pred2 = clf.predict(X_test_undersample)
+for clf in classifiers:
+    clf.fit(X_train_undersample, y_train_undersample)
+    name = clf.__class__.__name__
 
-confusionmatrix_undersample = confusion_matrix(y_test_undersample, pred)
-cnfmatrix2 = confusion_matrix(y_test_undersample, pred2)
+    print("=" * 30)
+    print(name)
+
+    print('****Results****')
+    train_predictions = clf.predict(X_test_undersample)
+    acc = accuracy_score(y_test_undersample, train_predictions)
+    rec = recall_score(y_test_undersample, train_predictions)
+    print("Accuracy: {:.4%}".format(acc))
+    print("Recall: {:.4%}".format(rec))
+
+    train_predictions = clf.predict_proba(X_test_undersample)
+    ll = log_loss(y_test_undersample, train_predictions)
+    print("Log Loss: {}".format(ll))
+
+    log_entry = pd.DataFrame([[name, acc * 100, ll]], columns=log_cols)
+    log = log.append(log_entry)
+
+print("=" * 30)
 
 
-print(confusionmatrix_undersample)
-print(cnfmatrix2)
-print(classification_report(y_test_undersample, pred))
-print(classification_report(y_test_undersample, pred2))
+sns.set_color_codes("muted")
+sns.barplot(x='Accuracy', y='Classifier', data=log, color="b")
 
+plt.xlabel('Accuracy %')
+plt.title('Classifier Accuracy')
+plt.show()
 
-print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred))
-print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred2))
+sns.set_color_codes("muted")
+sns.barplot(x='Log Loss', y='Classifier', data=log, color="g")
 
+plt.xlabel('Log Loss')
+plt.title('Classifier Log Loss')
+plt.show()
+# classifier.fit(X_train_undersample, y_train_undersample)
+# clf.fit(X_train_undersample, y_train_undersample)
+#
+# pred = classifier.predict(X_test_undersample)
+# pred2 = clf.predict(X_test_undersample)
 
-print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred))
-print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred2))
+# confusionmatrix_undersample = confusion_matrix(y_test_undersample, pred)
+# cnfmatrix2 = confusion_matrix(y_test_undersample, pred2)
+#
+#
+# print(confusionmatrix_undersample)
+# print(cnfmatrix2)
+# print(classification_report(y_test_undersample, pred))
+# print(classification_report(y_test_undersample, pred2))
+#
+#
+# print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred))
+# print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred2))
+#
+#
+# print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred))
+# print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred2))
 
 
 
