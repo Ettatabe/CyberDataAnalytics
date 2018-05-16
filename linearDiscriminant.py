@@ -1,21 +1,10 @@
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn import  metrics
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, log_loss
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC, LinearSVC, NuSVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 import matplotlib.pyplot as plt
-
-
-
 from sklearn.metrics import confusion_matrix, precision_recall_curve, auc, roc_auc_score, roc_curve, recall_score, classification_report
 from numpy import *
 import numpy as np
@@ -76,32 +65,11 @@ X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.06, random_s
 X_train_undersample, X_test_undersample, y_train_undersample, y_test_undersample = train_test_split(X_undersample, y_undersample, test_size=0.06, random_state=0)
 
 
-
-
-
-'''Split entire dataset and the undersampled data into training and test sets'''
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.06, random_state=0)
-
-
-
-
-
-
-'''Classifier'''
+'''Classifier to be used.'''
 classifiers = [
-    KNeighborsClassifier(3),
-    SVC(kernel="rbf", C=0.025, probability=True),
-    NuSVC(probability=True),
-    DecisionTreeClassifier(),
-    RandomForestClassifier(),
-    AdaBoostClassifier(),
-    GradientBoostingClassifier(),
-    GaussianNB(),
-    LinearDiscriminantAnalysis(),
-    QuadraticDiscriminantAnalysis(),
-    MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(6,2), random_state=1),
-    RandomForestClassifier(max_depth=3, random_state=0) ]
-
+    LinearDiscriminantAnalysis()
+    ]
+'''Remove all Nan, NA strings in undersampled training data set and parse to ints'''
 X_train_undersample = np.nan_to_num(X_train_undersample)
 for i,item in enumerate(X_train_undersample):
     if "NA" in item:
@@ -119,6 +87,7 @@ X_test_undersample = np.nan_to_num(X_test_undersample)
 log_cols=["Classifier", "Accuracy", "Log Loss"]
 log = pd.DataFrame(columns=log_cols)
 
+'''Fit training data and predict result, Calculate confusionmatrix, recall, log loss and accuracy '''
 for clf in classifiers:
     clf.fit(X_train_undersample, y_train_undersample)
     name = clf.__class__.__name__
@@ -133,6 +102,11 @@ for clf in classifiers:
     print("Accuracy: {:.4%}".format(acc))
     print("Recall: {:.4%}".format(rec))
 
+    confusionmatrix_undersample = confusion_matrix(y_test_undersample, train_predictions)
+    print(confusionmatrix_undersample)
+
+    print(classification_report(y_test_undersample, train_predictions))
+
     train_predictions = clf.predict_proba(X_test_undersample)
     ll = log_loss(y_test_undersample, train_predictions)
     print("Log Loss: {}".format(ll))
@@ -142,7 +116,7 @@ for clf in classifiers:
 
 print("=" * 30)
 
-
+'''Plot graphs '''
 sns.set_color_codes("muted")
 sns.barplot(x='Accuracy', y='Classifier', data=log, color="b")
 
@@ -156,30 +130,3 @@ sns.barplot(x='Log Loss', y='Classifier', data=log, color="g")
 plt.xlabel('Log Loss')
 plt.title('Classifier Log Loss')
 plt.show()
-# classifier.fit(X_train_undersample, y_train_undersample)
-# clf.fit(X_train_undersample, y_train_undersample)
-#
-# pred = classifier.predict(X_test_undersample)
-# pred2 = clf.predict(X_test_undersample)
-
-# confusionmatrix_undersample = confusion_matrix(y_test_undersample, pred)
-# cnfmatrix2 = confusion_matrix(y_test_undersample, pred2)
-#
-#
-# print(confusionmatrix_undersample)
-# print(cnfmatrix2)
-# print(classification_report(y_test_undersample, pred))
-# print(classification_report(y_test_undersample, pred2))
-#
-#
-# print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred))
-# print("Accuracy of testing dataset", metrics.accuracy_score(y_test_undersample, pred2))
-#
-#
-# print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred))
-# print("recall of  testing dataset: ", metrics.recall_score(y_test_undersample, pred2))
-
-
-
-
-
