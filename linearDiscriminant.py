@@ -122,11 +122,25 @@ sns.barplot(x='Accuracy', y='Classifier', data=log, color="b")
 
 plt.xlabel('Accuracy %')
 plt.title('Classifier Accuracy')
-plt.show()
+#plt.show()
 
 sns.set_color_codes("muted")
 sns.barplot(x='Log Loss', y='Classifier', data=log, color="g")
 
 plt.xlabel('Log Loss')
 plt.title('Classifier Log Loss')
+#plt.show()
+
+logit_roc_auc = roc_auc_score(y_test_undersample, classifiers[0].predict(X_test_undersample))
+fpr, tpr, thresholds = roc_curve(y_test_undersample, classifiers[0].predict_proba(X_test_undersample)[:,1])
+plt.figure()
+
+plt.plot(fpr, tpr, label='Logistic Regression (area = %0.2f)' % logit_roc_auc)
+plt.plot([0, 1], [0, 1],'r--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.0])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc="lower right")
 plt.show()
